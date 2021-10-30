@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import *
-from tkinter import filedialog, Label
+from tkinter import filedialog
 from tkinter.messagebox import showerror
-from PIL import Image, ImageTk
+import PIL
+from PIL import ImageTk
+from PIL import Image
 import cv2
 import numpy as np
 import math
+import os
 
 class Window:
     def __init__(self, root):
@@ -26,6 +29,7 @@ class Window:
         self.imlabel.place(x=20, y=50)
 
         self.thumb_size = 300,300
+        self.image_path = ""
 
     def fButton_click(self):
         try:
@@ -34,7 +38,7 @@ class Window:
             [
                 ('image files', ('.png', '.jpg', '.jpeg', '.webp', '.pjpeg', '.pjp'))
             ])
-            if not self.image_path:
+            if not self.image_path or self.image_path is None or self.image_path == "":
                 return
 
             # Načti obrázek a vytvoř jeho miniaturu
@@ -49,6 +53,10 @@ class Window:
             raise Exception("Nepovedlo se načíst soubor" + str(e))
 
     def encrButton_click(self):
+        if not self.image_path or self.image_path is None or self.image_path == "":
+            raise Exception("Musíš vybrat obrázek")
+            return
+
         # Získej řetězec k zašifrování
         msg = self.textField.get(1.0, "end-1c")
         img = cv2.imread(self.image_path)
@@ -94,6 +102,7 @@ class Window:
                     #Kontroluji zda index bitu je 7 (předposlední bit znaku)
                     if (index_k == 7):
                         #Zkontroluji zda zbývá další znak k zakódování
+                        #V případě že ne, tak nastavím poslední bit na 0, v opačném případě na 1
                         if (charCount * 3 < PixReq and img[i][count][2] % 2 == 1):
                             img[i][count][2] -= 1
                         if (charCount * 3 >= PixReq and img[i][count][2] % 2 == 0):
@@ -101,9 +110,24 @@ class Window:
                         count += 1
 
             count = 0
-        cv2.imwrite("img/encrypted_image.png", img)
+        self.encrypted_image = img
+
+        save_location = filedialog.asksaveasfile(mode='w', initialfile="encrypted_image", defaultextension=".png", filetypes=
+            [
+                ('image files', ('.png', '.jpg', '.jpeg', '.webp', '.pjpeg', '.pjp'))
+            ])
+        if save_location is None or not save_location or save_location == "":
+            return
+        print(save_location)
+
+        os.remove(save_location.name)
+        cv2.imwrite(save_location.name, img)
 
     def decrButton_click(self):
+        self.fButton_click()
+        if not self.image_path or self.image_path is None or self.image_path == "":
+            return
+
         #Načtení miniatury obrázku
         load = Image.open("img/encrypted_image.png")
         load.thumbnail(self.thumb_size, Image.ANTIALIAS)
@@ -116,7 +140,7 @@ class Window:
         self.imlabel.configure(image=render)
 
         #Načtení obrázku
-        img = cv2.imread("img/encrypted_image.png")
+        img = cv2.imread(self.image_path)
         data = []
         stop = False
         #Procházím řádky obrázku
@@ -129,7 +153,7 @@ class Window:
                     data.append(bin(j[0])[-1])
                     data.append(bin(j[1])[-1])
 
-                    #Zkontroluji zda se jedná o ukončující pixel, pokud ano pak ukončím dešifrování
+                    #Zkontroluji, zda se jedná o ukončující pixel, pokud ano pak ukončím dešifrování
                     if (bin(j[2])[-1] == '1'):
                         stop = True
                         break
@@ -150,6 +174,8 @@ class Window:
         message = [chr(int(''.join(i), 2)) for i in message]
         message = ''.join(message)
 
+        self.textField.delete(1.0, "end")
+        self.textField.insert(1.0, message)
         print("Decrypted:" + message)
 
 
