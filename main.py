@@ -68,7 +68,7 @@ class Window:
         print(img.shape)
         print(msg)
 
-        #Spočítám kolik pixelů potřebuji -> pro každý znak potřebuji 3 pixely -> počet znaků * 3
+        #Spočítám kolik pixelů potřebuji -> pro každý znak potřebuji 3 pixely(do každého pixelu uložím 3 bity) -> počet znaků * 3
         PixReq = len(msg) * 3
 
         #Spočítám počet řádků které budou potřeba
@@ -87,7 +87,7 @@ class Window:
                 char = msg[charCount]
                 charCount += 1
 
-                #Procházím bity jednotlivých znaků
+                #Procházím bity ve znaku
                 for index_k, k in enumerate(char):
 
                     #Pokud je hodnota bitu 1 a hodnota pixelu je sudá, pak odečtu z pixelu 1, abych udělal lichou hodnotu pixelu
@@ -99,14 +99,16 @@ class Window:
                     if (index_k % 3 == 2):
                         count += 1
 
-                    #Kontroluji zda index bitu je 7 (předposlední bit znaku)
+                    #Kontroluji zda index bitu je 7 (poslední bit ve znaku)
                     if (index_k == 7):
-                        #Zkontroluji zda zbývá další znak k zakódování
-                        #V případě že ne, tak nastavím poslední bit na 0, v opačném případě na 1
+                        #Nastavím ukončovací bit
                         if (charCount * 3 < PixReq and img[i][count][2] % 2 == 1):
+                            #V případě že musím zakódovat další pixel tak nastavím poslední bit na 0
                             img[i][count][2] -= 1
+
                         if (charCount * 3 >= PixReq and img[i][count][2] % 2 == 0):
-                            img[i][count][2] -= 1
+                            # V případě že jsem už zakódoval všechny znaky tak nastavím poslední bit na 1
+                            img[i][count][2] -= 1#Změním hodnotu posledního bitu na 1 odečetením 1 od stávající hodnoty
                         count += 1
 
             count = 0
@@ -143,21 +145,21 @@ class Window:
         img = cv2.imread(self.image_path)
         data = []
         stop = False
-        #Procházím řádky obrázku
+        #Procházím přes řádky v obrázku
         for index_i, i in enumerate(img):
             i.tolist()
-            #Procházím přes jednotlivé hodnoty v pixelu
+            #Procházím přes RGB hodnoty v pixelu
             for index_j, j in enumerate(i):
-                #Kontroluji vždy binární hodnoty 3 pixelů, které reprezentují jeden znak
                 if ((index_j) % 3 == 2):
                     data.append(bin(j[0])[-1])
                     data.append(bin(j[1])[-1])
 
-                    #Zkontroluji, zda se jedná o ukončující pixel, pokud ano pak ukončím dešifrování
+                    #Zkontroluji, zda se jedná o ukončující pixel(poslední bit -> 1), pokud ano pak ukončím dešifrování
                     if (bin(j[2])[-1] == '1'):
                         stop = True
                         break
                 else:
+                    #Přidám do seznamu poslední bit R,G a B hodnot z jednoho pixelu
                     data.append(bin(j[0])[-1])
                     data.append(bin(j[1])[-1])
                     data.append(bin(j[2])[-1])
