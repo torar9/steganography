@@ -31,7 +31,7 @@ class Window:
         self.imgLabel = Label(root, text="Obrázek:")
         self.imgLabel.place(x=10, y=45)
 
-        self.imgHolder = Label(root, bg="white", height=10, width=30)
+        self.imgHolder = Label(root)
         self.imgHolder.place(x=20, y=65)
 
         self.thumb_size = 300,300
