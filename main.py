@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
+from tkinter import Label
 from tkinter.messagebox import showerror
 import PIL
 from PIL import ImageTk
@@ -13,20 +14,24 @@ import os
 class Window:
     def __init__(self, root):
         #Nastavení GUI prvků v okně
-        self.fileButton = Button(app, text="Nahrát obrázek", bg='white', fg='black', command=self.fButton_click)
+        self.fileButton = Button(root, text="Nahrát obrázek", bg='white', fg='black', command=self.fButton_click)
         self.fileButton.place(x=250, y=10)
 
-        self.encryptButton = Button(app, text="Šifrovat", bg='white', fg='black', command=self.encrButton_click)
-        self.encryptButton.place(x=340, y=220)
+        self.encryptButton = Button(root, text="Šifrovat", bg='white', fg='black', command=self.encrButton_click)
+        self.encryptButton.place(x=340, y=230)
 
-        self.decryptButton = Button(app, text="Dešifrovat", bg='white', fg='black', command=self.decrButton_click)
-        self.decryptButton.place(x=420, y=220)
+        self.decryptButton = Button(root, text="Dešifrovat", bg='white', fg='black', command=self.decrButton_click)
+        self.decryptButton.place(x=420, y=230)
 
-        self.textField = Text(app, wrap=WORD, width=30)
-        self.textField.place(x=340, y=55, height=165)
+        self.textLabel = Label(root, text="Zpráva:")
+        self.textLabel.place(x=340, y=45)
+        self.textField = Text(root, wrap=WORD, width=30)
+        self.textField.place(x=340, y=65, height=165)
 
-        self.imlabel = tk.Label()
-        self.imlabel.place(x=20, y=50)
+        self.imgLabel = Label(root, text="Obrázek:")
+        self.imgLabel.place(x=10, y=45)
+        self.imlabel = Label(root)
+        self.imlabel.place(x=20, y=60)
 
         self.thumb_size = 300,300
         self.image_path = ""
