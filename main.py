@@ -30,8 +30,9 @@ class Window:
 
         self.imgLabel = Label(root, text="Obrázek:")
         self.imgLabel.place(x=10, y=45)
-        self.imlabel = Label(root)
-        self.imlabel.place(x=20, y=60)
+
+        self.imgHolder = Label(root, bg="white", height=10, width=30)
+        self.imgHolder.place(x=20, y=65)
 
         self.thumb_size = 300,300
         self.image_path = ""
@@ -51,8 +52,8 @@ class Window:
             image.thumbnail(self.thumb_size, Image.ANTIALIAS)
             thumb = ImageTk.PhotoImage(image)
 
-            self.imlabel.image = thumb
-            self.imlabel.configure(image=thumb)
+            self.imgHolder.image = thumb
+            self.imgHolder.configure(image=thumb)
 
         except Exception as e:
             raise Exception("Nepovedlo se načíst soubor" + str(e))
@@ -77,6 +78,9 @@ class Window:
         RowReq = PixReq / width
         #Zaokrouhlím výsledek
         RowReq = math.ceil(RowReq)
+
+        if((len(img) * len(img[0])) < PixReq):
+            raise Exception("Obrázek je pro zakódování zprávy příliš malý")
 
         #pomocné čítače
         count = 0
@@ -139,8 +143,8 @@ class Window:
         render = ImageTk.PhotoImage(load)
 
         #Nastavení miniatury v GUI
-        self.imlabel.image = render
-        self.imlabel.configure(image=render)
+        self.imgHolder.image = render
+        self.imgHolder.configure(image=render)
 
         #Načtení obrázku
         img = cv2.imread(self.image_path)
@@ -184,7 +188,7 @@ class Window:
 if __name__ == '__main__':
     app = Tk()
     app.title = "KOSBD - Úkol č. 2"
-    app.geometry('600x600')
+    app.geometry('600x300')
 
     #Nastavení chybového okna
     def report_callback_exception(self, exc, val, tb):
