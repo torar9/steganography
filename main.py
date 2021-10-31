@@ -65,13 +65,10 @@ class Window:
         # Získej řetězec k zašifrování
         msg = self.textField.get(1.0, "end-1c")
         img = cv2.imread(self.image_path)
-        print(msg)
 
         #Transformuj text do ASCII a následně do binární podoby
         msg = [format(ord(i), '08b') for i in msg]
         _, width, _ = img.shape
-        print(img.shape)
-        print(msg)
 
         #Spočítám kolik pixelů potřebuji -> pro každý znak potřebuji 3 pixely(do každého pixelu uložím 3 bity) -> počet znaků * 3
         PixReq = len(msg) * 3
@@ -125,7 +122,6 @@ class Window:
             ])
         if save_location is None or not save_location or save_location == "":
             return
-        print(save_location)
 
         os.remove(save_location.name)
         cv2.imwrite(save_location.name, img)
@@ -136,7 +132,7 @@ class Window:
             return
 
         #Načtení miniatury obrázku
-        load = Image.open("img/encrypted_image.png")
+        load = Image.open(self.image_path)
         load.thumbnail(self.thumb_size, Image.ANTIALIAS)
         load = np.asarray(load)
         load = Image.fromarray(np.uint8(load))
@@ -183,7 +179,6 @@ class Window:
 
         self.textField.delete(1.0, "end")
         self.textField.insert(1.0, message)
-        print("Decrypted:" + message)
 
 
 if __name__ == '__main__':
