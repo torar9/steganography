@@ -94,22 +94,22 @@ class Window:
         for i in range(RowReq + 1):
             #Procházím přes pole znaků
             while (count < width and charCount < len(msg)):
-                char = msg[charCount]
+                character = msg[charCount]
                 charCount += 1
                 #Procházím bity ve znaku
-                for index_k, k in enumerate(char):
+                for k_index, k in enumerate(character):
 
                     #Pokud je hodnota bitu 1 a hodnota pixelu je sudá, pak odečtu z pixelu 1, abych udělal lichou hodnotu pixelu
-                    if ((k == '1' and img[i][count][index_k % 3] % 2 == 0) or
+                    if ((k == '1' and img[i][count][k_index % 3] % 2 == 0) or
                             (#Stejně tak pokud je hodnota bitu 0 a hodnota pixelu je lichá, pak opět odečtu 1 od hodnoty pixelu a získám tak sudou hodnotu pixelu
-                            k == '0' and img[i][count][index_k % 3] % 2 == 1)):
-                        img[i][count][index_k % 3] -= 1 #Odečet 1 od hodnoty pixelu v obrázku
+                            k == '0' and img[i][count][k_index % 3] % 2 == 1)):
+                        img[i][count][k_index % 3] -= 1 #Odečet 1 od hodnoty pixelu v obrázku
 
-                    if (index_k % 3 == 2):
+                    if (k_index % 3 == 2):
                         count += 1
 
                     #Kontroluji zda index bitu je 7 (poslední bit ve znaku)
-                    if (index_k == 7):
+                    if (k_index == 7):
                         #Nastavím ukončovací bit
                         if (charCount * 3 < PixReq and img[i][count][2] % 2 == 1):
                             #V případě že musím zakódovat další pixel tak nastavím poslední bit na 0
@@ -136,8 +136,8 @@ class Window:
         cv2.imwrite(save_location.name, img)
 
     def decrButton_click(self):
-        self.fButton_click()
         if not self.image_path or self.image_path is None or self.image_path == "":
+            raise Exception("Je nutné nejprve vybrat obrázek")
             return
 
         #Načtení miniatury obrázku
@@ -176,18 +176,18 @@ class Window:
             if (stop):
                 break
 
-        message = []
+        result = []
 
         #Transformuj bity do ASCII hodnot po 8 bitech -> 8 bitů = 1 znak
         for i in range(int((len(data) + 1) / 8)):
-            message.append(data[i * 8:(i * 8 + 8)])
+            result.append(data[i * 8:(i * 8 + 8)])
 
         #Spoj znaky do řetězce
-        message = [chr(int(''.join(i), 2)) for i in message]
-        message = ''.join(message)
+        result = [chr(int(''.join(i), 2)) for i in result]
+        result = ''.join(result)
 
         self.textField.delete(1.0, "end")
-        self.textField.insert(1.0, message)
+        self.textField.insert(1.0, result)
 
     #Metoda pro získání celého text
     def select_all(self):
