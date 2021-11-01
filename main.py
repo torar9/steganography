@@ -58,6 +58,7 @@ class Window:
 
             self.imgHolder.image = thumb
             self.imgHolder.configure(image=thumb)
+            image.close()
 
         except Exception as e:
             raise Exception("Nepovedlo se načíst soubor" + str(e))
@@ -146,6 +147,7 @@ class Window:
         load = np.asarray(load)
         load = Image.fromarray(np.uint8(load))
         render = ImageTk.PhotoImage(load)
+        load.close()
 
         #Nastavení miniatury v GUI
         self.imgHolder.image = render
