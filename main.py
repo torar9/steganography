@@ -9,7 +9,6 @@ from PIL import Image
 import cv2
 import numpy as np
 import math
-import os
 
 class Window:
     def __init__(self, root):
@@ -28,8 +27,6 @@ class Window:
         self.textLabel.place(x=340, y=45)
         self.textField = Text(root, wrap=WORD, width=30)
         self.textField.place(x=340, y=65, height=165)
-        self.textField.bind('<Control-a>', self.select_all())
-        self.textField.bind('<Control-A>', self.select_all())
 
         self.imgLabel = Label(root, text="Obrázek:")
         self.imgLabel.place(x=10, y=45)
@@ -132,7 +129,7 @@ class Window:
         self.encrypted_image = img
 
         #Odstraním již existující soubor
-        os.remove(save_location.name)
+        #os.remove(save_location.name)
         #Uložím obrázek na disk
         cv2.imwrite(save_location.name, img)
 
@@ -190,13 +187,6 @@ class Window:
 
         self.textField.delete(1.0, "end")
         self.textField.insert(1.0, result)
-
-    #Metoda pro získání celého text
-    def select_all(self):
-        self.textField.tag_add(SEL, "1.0", END)
-        self.textField.mark_set(INSERT, "1.0")
-        self.textField.see(INSERT)
-        return 'break'
 
 
 if __name__ == '__main__':
