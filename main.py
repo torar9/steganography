@@ -13,7 +13,8 @@ import os
 
 class Window:
     def __init__(self, root):
-        #Nastavení GUI prvků v okně
+        self.root = root
+        #Nastavení grafických prvků prvků v okně
         self.fileButton = Button(root, text="Nahrát obrázek", bg='white', fg='black', command=self.fButton_click)
         self.fileButton.place(x=250, y=10)
 
@@ -27,6 +28,8 @@ class Window:
         self.textLabel.place(x=340, y=45)
         self.textField = Text(root, wrap=WORD, width=30)
         self.textField.place(x=340, y=65, height=165)
+        self.textField.bind('<Control-a>', self.select_all())
+        self.textField.bind('<Control-A>', self.select_all())
 
         self.imgLabel = Label(root, text="Obrázek:")
         self.imgLabel.place(x=10, y=45)
@@ -37,6 +40,7 @@ class Window:
         self.thumb_size = 300,300
         self.image_path = ""
 
+    #Metoda se zavolá po kliku na tlačítko určené pr
     def fButton_click(self):
         try:
             # Otevři dialogové okno pro nahrání souboru
@@ -60,14 +64,14 @@ class Window:
 
     def encrButton_click(self):
         if not self.image_path or self.image_path is None or self.image_path == "":
-            raise Exception("Musíš vybrat obrázek")
+            raise Exception("Je nutné nejprve vybrat obrázek")
             return
 
         # Získej řetězec k zašifrování
         msg = self.textField.get(1.0, "end-1c")
         img = cv2.imread(self.image_path)
 
-        #Transformuj text do ASCII a následně do binární podoby
+        #Transformuj jednotlivé znaky do binární podoby podle ASCII hodnot
         msg = [format(ord(i), '08b') for i in msg]
         _, width, _ = img.shape
 
@@ -92,7 +96,6 @@ class Window:
             while (count < width and charCount < len(msg)):
                 char = msg[charCount]
                 charCount += 1
-
                 #Procházím bity ve znaku
                 for index_k, k in enumerate(char):
 
@@ -118,7 +121,6 @@ class Window:
                         count += 1
 
             count = 0
-        self.encrypted_image = img
 
         save_location = filedialog.asksaveasfile(mode='w', initialfile="encrypted_image", defaultextension=".png", filetypes=
             [
@@ -126,8 +128,11 @@ class Window:
             ])
         if save_location is None or not save_location or save_location == "":
             return
+        self.encrypted_image = img
 
+        #Odstraním již existující soubor
         os.remove(save_location.name)
+        #Uložím obrázek na disk
         cv2.imwrite(save_location.name, img)
 
     def decrButton_click(self):
@@ -153,18 +158,18 @@ class Window:
         #Procházím přes řádky v obrázku
         for index_i, i in enumerate(img):
             i.tolist()
-            #Procházím přes RGB hodnoty v pixelu
+            #Procházím přes pixely v řádku
             for index_j, j in enumerate(i):
                 if ((index_j) % 3 == 2):
                     data.append(bin(j[0])[-1])
                     data.append(bin(j[1])[-1])
 
-                    #Zkontroluji, zda se jedná o ukončující pixel(poslední bit -> 1), pokud ano pak ukončím dešifrování
+                    #Zkontroluji, zda se jedná o ukončující pixel(poslední bit = 1), pokud ano pak ukončím dešifrování
                     if (bin(j[2])[-1] == '1'):
                         stop = True
                         break
                 else:
-                    #Přidám do seznamu poslední bit R,G a B hodnot z jednoho pixelu
+                    #Přidám do seznamu poslední bit R,G a B hodnot z pixelu
                     data.append(bin(j[0])[-1])
                     data.append(bin(j[1])[-1])
                     data.append(bin(j[2])[-1])
@@ -183,6 +188,13 @@ class Window:
 
         self.textField.delete(1.0, "end")
         self.textField.insert(1.0, message)
+
+    #Metoda pro získání celého text
+    def select_all(self):
+        self.textField.tag_add(SEL, "1.0", END)
+        self.textField.mark_set(INSERT, "1.0")
+        self.textField.see(INSERT)
+        return 'break'
 
 
 if __name__ == '__main__':
