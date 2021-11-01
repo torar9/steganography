@@ -9,6 +9,7 @@ from PIL import Image
 import cv2
 import numpy as np
 import math
+import os.path
 
 class Window:
     def __init__(self, root):
@@ -63,6 +64,10 @@ class Window:
     def encrButton_click(self):
         if not self.image_path or self.image_path is None or self.image_path == "":
             raise Exception("Je nutné nejprve vybrat obrázek")
+            return
+
+        if not os.path.isfile(self.image_path):
+            raise Exception("Obrázek na dané cestě neexistuje")
             return
 
         # Získej řetězec k zašifrování
@@ -136,6 +141,10 @@ class Window:
     def decrButton_click(self):
         if not self.image_path or self.image_path is None or self.image_path == "":
             raise Exception("Je nutné nejprve vybrat obrázek")
+            return
+
+        if not os.path.isfile(self.image_path):
+            raise Exception("Obrázek na dané cestě neexistuje")
             return
 
         #Načtení miniatury obrázku
