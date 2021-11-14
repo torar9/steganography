@@ -136,6 +136,7 @@ class Window:
         #Odstraním již existující soubor
         #os.remove(save_location.name)
         #Uložím obrázek na disk
+        save_location.close()
         cv2.imwrite(save_location.name, img)
 
     def decrButton_click(self):
